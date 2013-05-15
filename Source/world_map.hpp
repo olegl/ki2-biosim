@@ -88,7 +88,7 @@ class world_map
 		void move_creature
 			(const std::shared_ptr<creature>& c, int x, int y);
 
-		void add_creature_to_tile(const std::shared_ptr<creature>& c);
+                void add_creature_to_tile(const std::shared_ptr<creature>& c, int x, int y);
 		void remove_creature_from_tile(const std::shared_ptr<creature>& c) NOTHROW;
 
 

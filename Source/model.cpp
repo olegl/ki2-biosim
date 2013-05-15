@@ -75,7 +75,9 @@ std::weak_ptr<creature> model::create_creature
 	creatures_.push_back(c);
 
 	try
-		{ map_.add_creature_to_tile(c); }
+	{ 
+	        map_.add_creature_to_tile(c, x, y); 
+	}
 	catch (...)
 	{
 		creatures_.pop_back();
