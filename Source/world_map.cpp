@@ -89,24 +89,24 @@ void world_map::move_creature
 
 	if (x == c->x() && y == c->y()) return;
 
-	add_creature_to_tile(c, x, y);
-	remove_creature_from_tile(c);		
-
+	remove_creature_from_tile(c);
 	c->x_ = x;
 	c->y_ = y;
+	add_creature_to_tile(c);
 }
 
 
-void world_map::add_creature_to_tile(const std::shared_ptr<creature>& c, int x, int y)
+void world_map::add_creature_to_tile(const std::shared_ptr<creature>& c)
 {
-	if (x < 0 || y < 0 || x >= size_x_ || y >= size_y_)
+	if (c->x() < 0 || c->y() < 0 ||
+		c->x() >= size_x_ || c->y() >= size_y_)
 	{
-		std::cerr << "Target is not a valid map tile." << std::endl;
+		std::cerr << "Creature currently is not on a valid map tile." << std::endl;
 		return;
 	}
 
 	std::vector<std::shared_ptr<creature>>& tile_creatures =
-		tiles_[y * size_x_ + x].creatures_;
+		tiles_[c->y() * size_x_ + c->x()].creatures_;
 
 	tile_creatures.push_back(c);
 }

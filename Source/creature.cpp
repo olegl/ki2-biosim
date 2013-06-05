@@ -127,7 +127,4 @@ creature_prototype::sustentation_type
 	std::cerr << "Never reached!" << std::endl;
 }
 
-
-
-
 } /* namespace biosim */

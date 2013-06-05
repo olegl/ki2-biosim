@@ -16,6 +16,7 @@
 
 
 #include <memory>
+#include <vector>
 
 
 #include "creature.hpp"
@@ -56,6 +57,18 @@ class model
 			(const creature_prototype& prototype);
 
 		void perform_step();
+
+		void makeAction(std::shared_ptr<creature>* c, int currentState); // Zustandsautomat
+
+                // Kreaturen in Umgebung zurückgeben
+		std::list<std::shared_ptr<creature>> locator(std::shared_ptr<creature>* c, int distance);
+                std::list<std::shared_ptr<creature>> locator(int mypos_x, int mypos_y, int distance);
+
+		bool isPossible(int x, int y); // Kann ich an die Stelle gehen (z.B. Wasser)?
+
+		int randomNumber();
+
+		int randomNumberMinMax(int min, int max);
 
 
 	private:

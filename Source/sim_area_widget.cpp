@@ -120,6 +120,10 @@ void sim_area_widget::paint_world(wxPaintEvent&)
 
 		for (world_tile::creature_iterator it(tile.begin()); it != tile.end(); ++it)
 		{
+			creature *creaturePointer;
+			const std::shared_ptr<creature> *sharedPointer = &*it; // Pointer zu shared pointer
+			creaturePointer = sharedPointer->get(); // Pointer zum richtigen Creature-Objekt
+
 			const creature_prototype *prototype = &((*it)->prototype);
 
 			std::map<const creature_prototype*, wxBitmap>::iterator find_graphics
@@ -133,7 +137,15 @@ void sim_area_widget::paint_world(wxPaintEvent&)
 							(prototype, convert_to_bitmap(prototype->graphics()))).first;
 			}
 
-			dc.DrawBitmap(find_graphics->second, tilepos_x, tilepos_y);
+			// Wenn die Kreatur tot ist ...
+			if((creaturePointer->dead) == true) {
+				// ... dann dead.tga zeigen:
+				dc.DrawBitmap(dead_bitmap_, tilepos_x, tilepos_y);
+			}
+			else {
+				// Ansonsten normales Bild zeigen:
+				dc.DrawBitmap(find_graphics->second, tilepos_x, tilepos_y);
+			}
 		}
 	}
 }

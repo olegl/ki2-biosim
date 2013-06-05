@@ -12,6 +12,7 @@
 #define INCLUDED_CREATURE_HPP
 
 
+
 #include "build_config.hpp"
 
 
@@ -58,7 +59,6 @@ class creature_prototype
 		sustentation_type sustentation() const NOTHROW { return sustentation_; }
 
 		const image& graphics() const NOTHROW { return graphics_; }
-
 
 		/** Load creature prototypes from text file at given path. */
 		static std::list<creature_prototype> load(const std::string& path);
@@ -122,10 +122,17 @@ class creature
 
 	public:
 
+		// Zustände:
+		static const int INITIAL_STATE = 1001; // Anfangszustand
+		static const int EAT = 1002; // Gras essen
+		static const int DISCOVER = 1003; // Umgebung erkunden
+		static const int RUN = 1004; // Wegrennen
+		static const int DO_NOTHING = 1005; // Nichts tun
+
 		creature(const creature_prototype& prototype, int x, int y)
 			:
 			prototype(prototype), lifetime(prototype.lifetime()),
-			x_(x), y_(y)
+			x_(x), y_(y), lifepoints(100), dead(false), numOfDeadRounds(0), hunger(100), state(INITIAL_STATE)
 		{ }
 
 
@@ -135,6 +142,11 @@ class creature
 		const creature_prototype& prototype;
 
 		int lifetime;
+		int lifepoints; // Lebenspunkte
+		bool dead; // Tot oder nicht?
+		int numOfDeadRounds; // Wie lange ist Kreatur schon tot?
+		int hunger; // 0 = hungrig, 100 = satt
+		int state; // In welchem Zustand ist die Kreatur?
 
 
 	private:
