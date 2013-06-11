@@ -62,7 +62,6 @@ class model
 
                 // Kreaturen in Umgebung zurückgeben
 		std::list<std::shared_ptr<creature>> locator(std::shared_ptr<creature>* c, int distance);
-                std::list<std::shared_ptr<creature>> locator(int mypos_x, int mypos_y, int distance);
 
 		bool isPossible(int x, int y); // Kann ich an die Stelle gehen (z.B. Wasser)?
 

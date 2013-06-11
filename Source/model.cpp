@@ -161,10 +161,11 @@ void model::perform_step()
 void model::makeAction(std::shared_ptr<creature>* c, int currentState) {
 	// Erst einmal nur Pflanzenfresser betrachten:
 	if(c->get()->prototype.sustentation() == creature_prototype::herbivore) {
-		currentState = creature::RUN;
+		currentState = creature::DISCOVER;
 		int x;
 		int y;
 		bool found = false;
+		std::list<std::shared_ptr<creature>> env;
 
 		switch(currentState) {
 		case creature::INITIAL_STATE:
@@ -176,6 +177,7 @@ void model::makeAction(std::shared_ptr<creature>* c, int currentState) {
 			break;
 		case creature::DISCOVER:
 			/* Hier sollte man prüfen, ob Feinde in der Nähe sind oder ob es etwas zu essen gibt. Je nachdem wird dann der Zustand gesetzt. */
+			env = locator(c, 5);
 
 			// Position der Kreatur:
 			x = c->get()->x();
@@ -242,23 +244,27 @@ void model::makeAction(std::shared_ptr<creature>* c, int currentState) {
 
 std::list<std::shared_ptr<creature>> model::locator(std::shared_ptr<creature>* c, int distance)
 {
-    return locator(c->get()->x(), c->get()->y(), distance);
-}
-std::list<std::shared_ptr<creature>> model::locator(int mypos_x, int mypos_y, int distance)
-{
     std::list<std::shared_ptr<creature>> nearby_creatures;
+	int mypos_x = c->get()->x();
+	int mypos_y = c->get()->y();
 
-    for (int i = mypos_x - distance; i <= mypos_x + distance; i++)
-    {
-        for (int j = mypos_y - distance; j <= mypos_y + distance; j++)
-        {
-            if (abs(mypos_x - i) + abs(mypos_y - j) <= distance)
-            {
+	for (int i = (std::max)(mypos_x - distance, 0); 
+		i <= (std::min)(map_.size_x(), mypos_x + distance);
+		i++)
+	{
+		for (int j = (std::max)(mypos_y - distance, 0); 
+			j <= (std::min)(map_.size_y(), mypos_y + distance); 
+			j++)
+		{
+			if (abs(mypos_x - i) + abs(mypos_y - j) <= distance)
+			{
                 world_tile currenttile = map_.at(i,j);
                 world_tile::creature_iterator ci = currenttile.begin();
                 while (ci != currenttile.end())
                 {
-                    nearby_creatures.push_back(*ci);
+					// don't include myself
+					if(ci->get() != c->get())
+						nearby_creatures.push_back(*ci);
                     ci++;
                 }
             }
@@ -266,6 +272,7 @@ std::list<std::shared_ptr<creature>> model::locator(int mypos_x, int mypos_y, in
     }
 
     return nearby_creatures;
+
 }
 
 /*
