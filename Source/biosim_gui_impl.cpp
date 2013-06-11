@@ -33,6 +33,9 @@ biosim_gui_impl::biosim_gui_impl(model& app_model)
 {
 	initialize_creature_prototypes();
 	update_scroll_ranges();
+
+	step_timer_.SetOwner(this);
+	Connect(wxEVT_TIMER, wxObjectEventFunction(&biosim_gui_impl::timer_step_event));
 }
 
 
@@ -91,8 +94,6 @@ void biosim_gui_impl::place_creature_event(wxCommandEvent& event)
 void biosim_gui_impl::button_start_event(wxCommandEvent& event)
 {
 	if (step_timer_.IsRunning()) return;
-
-	step_timer_.SetOwner(this);
 	step_timer_.Start(100);
 }
 

@@ -41,7 +41,9 @@ model::model()
 	map_(default_world_size_x_, default_world_size_y_),
 	cursor_x_(0),
 	cursor_y_(0)
-{ }
+{
+	srand( static_cast<unsigned int>(time(NULL) ));
+}
 
 
 void model::set_cursor(int x, int y)
@@ -112,7 +114,7 @@ void model::perform_step()
 			// Wenn die Kreatur normalerweise im Wasser lebt ...
 			if (habitat == creature_prototype::habitat_water) {
 				// ... dann prüfe, ob sie gerade NICHT auf einem Wasserfeld ist:
-				if((climate != world_tile::deep_water) || (climate != world_tile::shallow_water)) {
+			        if(!((climate == world_tile::deep_water) || (climate == world_tile::shallow_water))) {
 					// Lebenspunkte um 50 erniedrigen und zuweisen:
 					int life = creaturePointer->lifepoints;
 					life = life - 50;
@@ -136,7 +138,7 @@ void model::perform_step()
 			}
 
 			// Ist Kreatur jetzt tot?
-			if(creaturePointer->lifepoints == 0) {
+			if(creaturePointer->lifepoints <= 0) {
 				creaturePointer->dead = true;
 			}
 		}
@@ -246,9 +248,9 @@ std::list<std::shared_ptr<creature>> model::locator(int mypos_x, int mypos_y, in
 {
     std::list<std::shared_ptr<creature>> nearby_creatures;
 
-    for (int i = mypos_x - distance; i < mypos_x + distance; i++)
+    for (int i = mypos_x - distance; i <= mypos_x + distance; i++)
     {
-        for (int j = mypos_y - distance; j < mypos_y + distance; j++)
+        for (int j = mypos_y - distance; j <= mypos_y + distance; j++)
         {
             if (abs(mypos_x - i) + abs(mypos_y - j) <= distance)
             {
@@ -290,7 +292,6 @@ bool model::isPossible(int x, int y) {
  * Gibt eine zufällige Zahl zwischen 0 und 1 zurück.
  */
 int model::randomNumber() {
-	srand( static_cast<unsigned int>(time(NULL) ));
 	int randNum = rand() % 2;
 
 	return randNum;
