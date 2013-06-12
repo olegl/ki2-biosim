@@ -249,11 +249,11 @@ std::list<std::shared_ptr<creature>> model::locator(std::shared_ptr<creature>* c
 	int mypos_y = c->get()->y();
 
 	for (int i = (std::max)(mypos_x - distance, 0); 
-		i <= (std::min)(map_.size_x(), mypos_x + distance);
+		i <= (std::min)(map_.size_x()-1, mypos_x + distance);
 		i++)
 	{
 		for (int j = (std::max)(mypos_y - distance, 0); 
-			j <= (std::min)(map_.size_y(), mypos_y + distance); 
+			j <= (std::min)(map_.size_y()-1, mypos_y + distance); 
 			j++)
 		{
 			if (abs(mypos_x - i) + abs(mypos_y - j) <= distance)
