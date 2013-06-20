@@ -63,7 +63,10 @@ class model
                 // Kreaturen in Umgebung zurückgeben
 		std::list<std::shared_ptr<creature>> locator(std::shared_ptr<creature>* c, int distance);
 
-		bool isPossible(int x, int y); // Kann ich an die Stelle gehen (z.B. Wasser)?
+        bool isPossibleLandType(int x, int y); // Kann Landbewohner an diese Stelle gehen?
+		bool isPossibleWaterType(int x, int y);// Kann Wasserbewohner an diese Stelle gehen?
+		bool isEmpty(int x, int y);     // Ist das Feld (x,y) leer?
+		bool findValidNeighbor(std::shared_ptr<creature>* c, int & x, int & y);
 
 		int randomNumber();
 
@@ -71,6 +74,8 @@ class model
 
 
 	private:
+
+        int turn;
 
 		std::weak_ptr<creature> create_creature
 			(const creature_prototype& prototype, int x, int y);

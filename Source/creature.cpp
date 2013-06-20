@@ -13,7 +13,7 @@
 
 #include <iostream>
 #include <fstream>
-#include <stdlib.h> 
+#include <stdlib.h>
 
 
 #include "exception.hpp"
@@ -43,7 +43,7 @@ std::list<creature_prototype>
 		std::cerr << "Creature list: " << path << " was not found." << std::endl;
 		throw file_operation_failed();
 	}
- 
+
 	while (!inputtext.eof() && !!inputtext)
 	{
 		std::string line;
@@ -56,13 +56,13 @@ std::list<creature_prototype>
 			nextstop = line.find_first_of(',');
 			split_line.push_back(line.substr(0, nextstop));
 
-			if (nextstop == std::string::npos || nextstop > 1000) 
+			if (nextstop == std::string::npos || nextstop > 1000)
 			        break;
 
 			line = line.substr(nextstop + 1);
 		}
-		
-		if (split_line.size() != 6)
+
+		if (split_line.size() != 7)
 		{
 		        std::cerr << "Line in creature list has too few or too many entries. Nextstop = " << nextstop << ", split_line size is " << split_line.size() << std::endl;
 			continue;
@@ -78,10 +78,11 @@ std::list<creature_prototype>
 			creature_prototype::habitat_type habitat = string_to_habitat(split_line[4]);
 			creature_prototype::sustentation_type sustentation = string_to_sustentation(split_line[4]);
 			std::unique_ptr<image> graphics(image::load(split_line[5]));
-		
+            int reproduction = atoi(split_line[6].c_str());
+
 			result.push_back
 				(creature_prototype(name, strength, speed, lifetime,
-									properties, habitat, sustentation, *graphics));
+									properties, habitat, sustentation, *graphics, reproduction));
 		}
 		catch (const std::exception&)
 		{

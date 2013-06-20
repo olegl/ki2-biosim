@@ -19,6 +19,7 @@
 #include <memory>
 #include <string>
 #include <list>
+#include <deque>
 
 
 #include "image.hpp"
@@ -53,6 +54,7 @@ class creature_prototype
 		int strength() const NOTHROW { return strength_; }
 		int speed() const NOTHROW { return speed_; }
 		int lifetime() const NOTHROW { return lifetime_; }
+		int repFreq() const NOTHROW { return reproduction_freq; }
 
 		const std::string& properties() const NOTHROW { return properties_; }
 		habitat_type habitat() const NOTHROW { return habitat_; }
@@ -69,14 +71,14 @@ class creature_prototype
 		creature_prototype
 			(const std::string& name, int strength, int speed, int lifetime,
 			 const std::string& properties, habitat_type habitat, sustentation_type sustentation,
-			 const image& graphics)
+			 const image& graphics, int reproduction)
 			:
 			name_(name), strength_(strength), speed_(speed), lifetime_(lifetime),
 			properties_(properties), habitat_(habitat), sustentation_(sustentation),
-			graphics_(graphics)
+			graphics_(graphics), reproduction_freq(reproduction)
 		{ }
 
-	
+
 		static habitat_type string_to_habitat(const std::string& s);
 		static sustentation_type string_to_sustentation(const std::string& s);
 
@@ -86,6 +88,7 @@ class creature_prototype
 		int strength_;
 		int speed_;
 		int lifetime_;
+		int reproduction_freq;
 
 		std::string properties_;
 		habitat_type habitat_;
@@ -128,11 +131,12 @@ class creature
 		static const int DISCOVER = 1003; // Umgebung erkunden
 		static const int RUN = 1004; // Wegrennen
 		static const int DO_NOTHING = 1005; // Nichts tun
+		static const int REPRODUCE = 1006;  // Fortpflanzen
 
 		creature(const creature_prototype& prototype, int x, int y)
 			:
 			prototype(prototype), lifetime(prototype.lifetime()),
-			x_(x), y_(y), lifepoints(100), dead(false), numOfDeadRounds(0), hunger(100), state(INITIAL_STATE)
+			x_(x), y_(y), lifepoints(100), dead(false), numOfDeadRounds(0), hunger(0), state(INITIAL_STATE), full_count(0)
 		{ }
 
 
@@ -141,12 +145,15 @@ class creature
 
 		const creature_prototype& prototype;
 
-		int lifetime;
+		int lifetime;   // Alter der Kreatur
 		int lifepoints; // Lebenspunkte
 		bool dead; // Tot oder nicht?
 		int numOfDeadRounds; // Wie lange ist Kreatur schon tot?
 		int hunger; // 0 = hungrig, 100 = satt
 		int state; // In welchem Zustand ist die Kreatur?
+
+        std::deque<bool> hunger_memory;  // Speichert für die letzten 10 Runden, ob die Kreatur satt war (für Fleischfresser)
+        int full_count;     // Zählt seit wie vielen Runden die Kreatur kontinuierlich satt ist (für Pflanzenfresser)
 
 
 	private:
