@@ -60,7 +60,7 @@ class model
 
 		void makeAction(std::shared_ptr<creature>* c, int currentState); // Zustandsautomat
 
-                // Kreaturen in Umgebung zurückgeben
+                // Kreaturen in Umgebung zurï¿½ckgeben
 		std::list<std::shared_ptr<creature>> locator(std::shared_ptr<creature>* c, int distance);
 
         bool isPossibleLandType(int x, int y); // Kann Landbewohner an diese Stelle gehen?
@@ -78,17 +78,23 @@ class model
         int turn;
 
 		std::weak_ptr<creature> create_creature
-			(const creature_prototype& prototype, int x, int y);
+			(const creature_prototype& prototype, int x, int y, double smell_awareness = 0);
 		void destroy_creature
 			(const std::weak_ptr<creature>& c) NOTHROW;
 
 		void move_creature
 			(const std::weak_ptr<creature>& c, int x, int y);
 
+		void actionPlant    (std::shared_ptr<creature>* c, int currentState);
+		int  actionHerbivore(std::shared_ptr<creature>* c, int currentState);
+		int  actionCarnivore(std::shared_ptr<creature>* c, int currentState);
+
 
 		std::list<creature_prototype> prototypes_;
 		std::list<std::shared_ptr<creature>> creatures_;
 		world_map map_;
+
+		std::vector<std::vector<double> > smell_map;
 
 		int cursor_x_;
 		int cursor_y_;

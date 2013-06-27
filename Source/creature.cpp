@@ -128,4 +128,8 @@ creature_prototype::sustentation_type
 	std::cerr << "Never reached!" << std::endl;
 }
 
+double creature::getSmellAwareness(){
+	return smell_awareness;
+}
+
 } /* namespace biosim */

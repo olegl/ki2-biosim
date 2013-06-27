@@ -125,7 +125,7 @@ class creature
 
 	public:
 
-		// Zustände:
+		// Zustï¿½nde:
 		static const int INITIAL_STATE = 1001; // Anfangszustand
 		static const int EAT = 1002; // Gras essen
 		static const int DISCOVER = 1003; // Umgebung erkunden
@@ -133,11 +133,11 @@ class creature
 		static const int DO_NOTHING = 1005; // Nichts tun
 		static const int REPRODUCE = 1006;  // Fortpflanzen
 
-		creature(const creature_prototype& prototype, int x, int y)
+		creature(const creature_prototype& prototype, int x, int y, double smell_awareness)
 			:
 			prototype(prototype), lifetime(prototype.lifetime()),
 			x_(x), y_(y), lifepoints(100), dead(false), numOfDeadRounds(0), hunger(0), state(INITIAL_STATE), full_count(0)
-		{ }
+		{this->smell_awareness = smell_awareness; }
 
 
 		int x() const NOTHROW { return x_; }
@@ -152,9 +152,10 @@ class creature
 		int hunger; // 0 = hungrig, 100 = satt
 		int state; // In welchem Zustand ist die Kreatur?
 
-        std::deque<bool> hunger_memory;  // Speichert für die letzten 10 Runden, ob die Kreatur satt war (für Fleischfresser)
-        int full_count;     // Zählt seit wie vielen Runden die Kreatur kontinuierlich satt ist (für Pflanzenfresser)
+        std::deque<bool> hunger_memory;  // Speichert fï¿½r die letzten 10 Runden, ob die Kreatur satt war (fï¿½r Fleischfresser)
+        int full_count;     // Zï¿½hlt seit wie vielen Runden die Kreatur kontinuierlich satt ist (fï¿½r Pflanzenfresser)
 
+        double getSmellAwareness();
 
 	private:
 
@@ -163,6 +164,8 @@ class creature
 
 		int x_;
 		int y_;
+
+		double smell_awareness;
 };
 
 
