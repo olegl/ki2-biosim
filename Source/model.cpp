@@ -1,6 +1,5 @@
 // partially (c) Daniel Kober
 // partially (c) Simon Pirkelmann
-// partially (c) Christian Wolf
 
 /**
  *************************************************************************
@@ -25,6 +24,8 @@
 // #include <Windows.h>
 #include <queue>
 
+#define TEST
+
 
 namespace biosim
 {
@@ -41,100 +42,93 @@ model::model()
     :
     prototypes_(creature_prototype::load(default_prototype_list_)),
     map_(default_world_size_x_, default_world_size_y_),
+    map_smell(default_world_size_x_, default_world_size_y_),
     cursor_x_(0),
     cursor_y_(0)
 {
     srand( static_cast<unsigned int>(time(NULL) ));
 
 
-    // initialize smell_map; same size as world map and no smell at the beginning
-    for (int y=0; y<default_world_size_y_ ; y++){
-    	smell_map.push_back(std::vector<double>());
-    	for (int x=0; x<default_world_size_x_ ; x++){
-    		smell_map.at(y).push_back(0);
-    	}
-    }
-
-
+#ifdef TEST
     for (auto iter = prototypes_.begin(); iter != prototypes_.end(); iter++)
     {
-        if ((*iter).name() == "Kaktus")
-        {
-            for (int i = 0; i < map_.size_x(); i++)
-            {
-                for (int j = 0; j < map_.size_y(); j++)
-                {
-                    // Kakteen zufï¿½llig platzieren
-                    if (randomNumberMinMax(1,6) == 1 && isPossibleLandType(i,j))
-                        create_creature(*iter,i,j);
-                }
-            }
-        }
-
-        if ((*iter).name() == "Sonnenblume")
-        {
-            for (int i = 0; i < map_.size_x(); i++)
-            {
-                for (int j = 0; j < map_.size_y(); j++)
-                {
-                    // Sonnenblumen zufï¿½llig platzieren
-                    if (randomNumberMinMax(1,6) == 1 && isPossibleLandType(i,j))
-                        create_creature(*iter,i,j);
-                }
-            }
-        }
-
-        if ((*iter).name() == "Eiche")
-        {
-            for (int i = 0; i < map_.size_x(); i++)
-            {
-                for (int j = 0; j < map_.size_y(); j++)
-                {
-                    // Eichen zufï¿½llig platzieren
-                    if (randomNumberMinMax(1,6) == 1 && isPossibleLandType(i,j))
-                        create_creature(*iter,i,j);
-                }
-            }
-        }
-
-        if ((*iter).name() == "Obstbaum")
-        {
-            for (int i = 0; i < map_.size_x(); i++)
-            {
-                for (int j = 0; j < map_.size_y(); j++)
-                {
-                    // ObstbÃ¤ume zufï¿½llig platzieren
-                    if (randomNumberMinMax(1,6) == 1 && isPossibleLandType(i,j))
-                        create_creature(*iter,i,j);
-                }
-            }
-        }
-
-        if ((*iter).name() == "Tannenbaum")
-        {
-            for (int i = 0; i < map_.size_x(); i++)
-            {
-                for (int j = 0; j < map_.size_y(); j++)
-                {
-                    // TannenbÃ¤ume zufï¿½llig platzieren
-                    if (randomNumberMinMax(1,6) == 1 && isPossibleLandType(i,j))
-                        create_creature(*iter,i,j);
-                }
-            }
-        }
-
-        if ((*iter).name() == "Gebï¿½sch")
-        {
-            for (int i = 0; i < map_.size_x(); i++)
-            {
-                for (int j = 0; j < map_.size_y(); j++)
-                {
-                    // GebÃ¼sch zufï¿½llig platzieren
-                    if (randomNumberMinMax(1,6) == 1 && isPossibleLandType(i,j))
-                        create_creature(*iter,i,j);
-                }
-            }
-        }
+//        if ((*iter).name() == "Kaktus")
+//        {
+//            for (int i = 0; i < map_.size_x(); i++)
+//            {
+//                for (int j = 0; j < map_.size_y(); j++)
+//                {
+//                     Gras zufällig platzieren
+//                    if (randomNumberMinMax(1,6) == 1 && isPossibleLandType(i,j))
+//                        create_creature(*iter,i,j);
+//                }
+//            }
+//        }
+//
+//        if ((*iter).name() == "Sonnenblume")
+//        {
+//            for (int i = 0; i < map_.size_x(); i++)
+//            {
+//                for (int j = 0; j < map_.size_y(); j++)
+//                {
+//                     Gras zufällig platzieren
+//                    if (randomNumberMinMax(1,6) == 1 && isPossibleLandType(i,j))
+//                        create_creature(*iter,i,j);
+//                }
+//            }
+//        }
+//
+//        if ((*iter).name() == "Eiche")
+//        {
+//            for (int i = 0; i < map_.size_x(); i++)
+//            {
+//                for (int j = 0; j < map_.size_y(); j++)
+//                {
+//                     Gras zufällig platzieren
+//                    if (randomNumberMinMax(1,6) == 1 && isPossibleLandType(i,j))
+//                        create_creature(*iter,i,j);
+//                }
+//            }
+//        }
+//
+//        if ((*iter).name() == "Obstbaum")
+//        {
+//            for (int i = 0; i < map_.size_x(); i++)
+//            {
+//                for (int j = 0; j < map_.size_y(); j++)
+//                {
+//                     Gras zufällig platzieren
+//                    if (randomNumberMinMax(1,6) == 1 && isPossibleLandType(i,j))
+//                        create_creature(*iter,i,j);
+//                }
+//            }
+//        }
+//
+//        if ((*iter).name() == "Tannenbaum")
+//        {
+//            for (int i = 0; i < map_.size_x(); i++)
+//            {
+//                for (int j = 0; j < map_.size_y(); j++)
+//                {
+//                     Gras zufällig platzieren
+//                    if (randomNumberMinMax(1,6) == 1 && isPossibleLandType(i,j))
+//                        create_creature(*iter,i,j);
+//                }
+//            }
+//        }
+//
+//        if ((*iter).name() == "Gebüsch")
+//        {
+//            for (int i = 0; i < map_.size_x(); i++)
+//            {
+//                for (int j = 0; j < map_.size_y(); j++)
+//                {
+//                     Gras zufällig platzieren
+//                    if (randomNumberMinMax(1,6) == 1 && isPossibleLandType(i,j))
+//                        create_creature(*iter,i,j);
+//                }
+//            }
+//        }
 
         if ((*iter).name() == "Gras")
         {
@@ -142,12 +136,38 @@ model::model()
             {
                 for (int j = 0; j < map_.size_y(); j++)
                 {
-                    // Gras zufï¿½llig platzieren
-                    if (randomNumberMinMax(1,6) == 1 && isPossibleLandType(i,j))
+                    // Gras zufällig platzieren
+                    if (randomNumberMinMax(1,5) == 1 && isPossibleLandType(i,j))
                         create_creature(*iter,i,j);
                 }
             }
         }
+
+        if ((*iter).name() == "Emu")
+        {
+            for (int i = 0; i < map_.size_x(); i++)
+            {
+                for (int j = 0; j < map_.size_y(); j++)
+                {
+                    // Gras zufällig platzieren
+                    if (randomNumberMinMax(1,10) == 1 && isPossibleLandType(i,j))
+                        create_creature(*iter,i,j);
+                }
+            }
+        }
+
+//        if ((*iter).name() == "Wolf")
+//        {
+//            for (int i = 0; i < map_.size_x(); i++)
+//            {
+//                for (int j = 0; j < map_.size_y(); j++)
+//                {
+//                    // Gras zufällig platzieren
+//                    if (randomNumberMinMax(1,200) == 1 && isPossibleLandType(i,j))
+//                        create_creature(*iter,i,j);
+//                }
+//            }
+//        }
 
 //        if ((*iter).name() == "Schaf")
 //        {
@@ -155,68 +175,126 @@ model::model()
 //            {
 //                for (int j = 0; j < map_.size_y(); j++)
 //                {
-//                    // Schaf zufï¿½llig platzieren
+//                     Gras zufällig platzieren
 //                    if (randomNumberMinMax(1,500) == 1 && isPossibleLandType(i,j))
 //                        create_creature(*iter,i,j);
 //                }
 //            }
 //        }
-
-
-        if ((*iter).name() == "Kuh")
-        {
-            for (int i = 0; i < map_.size_x(); i++)
-            {
-                for (int j = 0; j < map_.size_y(); j++)
-                {
-                    // Kuh zufï¿½llig platzieren
-                    if (randomNumberMinMax(1,500) == 1 && isPossibleLandType(i,j))
-                        create_creature(*iter,i,j);
-                }
-            }
-        }
-
+//
+//
+//        if ((*iter).name() == "Kuh")
+//        {
+//            for (int i = 0; i < map_.size_x(); i++)
+//            {
+//                for (int j = 0; j < map_.size_y(); j++)
+//                {
+//                     Gras zufällig platzieren
+//                    if (randomNumberMinMax(1,500) == 1 && isPossibleLandType(i,j))
+//                        create_creature(*iter,i,j);
+//                }
+//            }
+//        }
+//
 //        if ((*iter).name() == "Pferd")
 //        {
 //            for (int i = 0; i < map_.size_x(); i++)
 //            {
 //                for (int j = 0; j < map_.size_y(); j++)
 //                {
-//                    // Pferd zufï¿½llig platzieren
+//                     Gras zufällig platzieren
 //                    if (randomNumberMinMax(1,500) == 1 && isPossibleLandType(i,j))
 //                        create_creature(*iter,i,j);
 //                }
 //            }
 //        }
-
+//
 //        if ((*iter).name() == "Emu")
 //        {
 //            for (int i = 0; i < map_.size_x(); i++)
 //            {
 //                for (int j = 0; j < map_.size_y(); j++)
 //                {
-//                    // Emu zufï¿½llig platzieren
+//                     Gras zufällig platzieren
 //                    if (randomNumberMinMax(1,500) == 1 && isPossibleLandType(i,j))
 //                        create_creature(*iter,i,j);
 //                }
 //            }
 //        }
-        if ((*iter).name() == "Tiger")
+    }
+#endif
+
+//    int number_of_flocks = (int)((double)(default_world_size_x_ * default_world_size_y_) / 625.0);
+//
+//    emu_flocks.resize(number_of_flocks);
+
+    std::vector<std::shared_ptr<creature>> emus;
+
+    // Neue Gerüche hinzufügen
+    for(auto it = creatures_.begin(); it != creatures_.end(); ++it)
+    {
+        creature *creaturePointer;
+        std::shared_ptr<creature> *sharedPointer = &*it; // Pointer zu shared pointer
+        creaturePointer = sharedPointer->get(); // Pointer zum "richtigen" Creature-Objekt
+
+        const creature_prototype& prototype = creaturePointer->prototype;  // Referenz zum Prototyp
+
+        if (prototype.name() == "Emu")
+            emus.push_back(*it);
+    }
+
+    std::cout << "Anzahl Emus: " << emus.size() << std::endl;
+
+    bool cont = true;
+
+    if (emus.size()>0)
+    while (cont)
+    {
+        // Zufälligen Emu auswählen
+        int random_number = randomNumberMinMax(0,emus.size()-1);
+
+        std::shared_ptr<creature> random_emu = emus[random_number];
+
+        std::cout << "Zufaelliger Emu: " << random_number << std::endl;
+
+//        std::vector<creature> new_flock;
+        emuflock new_flock;
+
+        // Alle Emus im Umkreis des zufälligen Emus suchen
+        for (auto it = emus.begin(); it != emus.end(); it++)
+        {
+            // Falls der Abstand zum zufälligen Emu kleiner als 20 ist, kommen die Emus zusammen in eine Herde
+            if ( abs( (*it)->x() - random_emu->x() ) + abs( (*it)->y() - random_emu->y() ) <= 25)
             {
-                for (int i = 0; i < map_.size_x(); i++)
-                {
-                    for (int j = 0; j < map_.size_y(); j++)
-                    {
-                        // Tiger zufï¿½llig platzieren
-                        if (randomNumberMinMax(1,500) == 1 && isPossibleLandType(i,j))
-                            create_creature(*iter,i,j,((double)randomNumberMinMax(1,50))/10);
-                    }
-                }
+                new_flock.addCreature(*it);
             }
+        }
 
+        std::cout << "Groesse der neuen Herde: " << new_flock.size() << std::endl;
 
+        if (new_flock.size() != 0)
+        {
+            emu_flocks.push_back(new_flock);
+        }
 
-      }
+        cont = false;
+        // Überprüfen, ob es noch Emus ohne Herde gibt
+        for (auto it = emus.begin(); it != emus.end(); it++)
+        {
+            // Wenn ein Emu noch keine Herde hat, wird weitergemacht
+            if (!(*it)->inFlock)
+                cont = true;
+        }
+    }
+
+    std::cout << emu_flocks.size() << " Erstellte Herden: " << std::endl;
+    int i = 0;
+    for (auto iter = emu_flocks.begin(); iter != emu_flocks.end(); iter++, i++)
+    {
+        int x,y;
+        iter->calcCenter(x,y);
+        std::cout << "Herde " << i+1 << " hat " << iter->size() << " Emus, Zentrum ist : (" << x << "," << y << ")" << std::endl;
+    }
 }
 
 
@@ -243,59 +321,54 @@ void model::create_creature_at_cursor
  */
 void model::perform_step()
 {
-
-//	std::cout<<std::endl;
-//			for(int y=0; y<10; ++y) {
-//				for(int x=0; x<10; ++x)
-//					std::printf("%7.3f ", smell_map.at(y).at(x));
-//				std::cout<<std::endl;
-//			}
+    turn++;
 
 //    std::cout << "-------------------------------" << std::endl;
-//    std::cout << "#     Runde " << std::setw(3) << ++turn << "               #" << std::endl;
+//    std::cout << "#     Runde " << std::setw(3) << turn << "               #" << std::endl;
 //    std::cout << "-------------------------------" << std::endl;
+    int i = 0;
+    for (auto iter = emu_flocks.begin(); iter != emu_flocks.end(); iter++, i++)
+    {
+        int x,y;
+        iter->calcCenter(x,y);
+        std::cout << "Herde " << i+1 << " hat " << iter->size() << " Emus, Zentrum ist : (" << x << "," << y << ")" << std::endl;
 
-    // Queue fï¿½r die Kreaturen, die entfernt werden mï¿½ssen (lï¿½schen beim Iterieren der Liste endet sonst bï¿½se):
-    std::queue<std::shared_ptr<creature>> creaturesToRemove;
+        if (turn % 3 == 0)
+        {
+            std::cout << "Herde " << i+1 << " stimmt ab" << std::endl;
+            iter->vote();
+        }
+    }
 
-    // Iterator fï¿½r das Durchlaufen der Creature-Liste:
+
+
+    // Iterator für das Durchlaufen der Creature-Liste:
     std::list<std::shared_ptr<creature>>::iterator it;
 
+    // Update der Map mit den Geruchsinformationen
+    map_smell.update();
 
-    //create new smell map to update smell
+    // Neue Gerüche hinzufügen
+    for(it = creatures_.begin(); it != creatures_.end(); ++it)
+    {
+        creature *creaturePointer;
+        std::shared_ptr<creature> *sharedPointer = &*it; // Pointer zu shared pointer
+        creaturePointer = sharedPointer->get(); // Pointer zum "richtigen" Creature-Objekt
 
-    std::vector<std::vector< double> > new_smell_map;
+        const creature_prototype& prototype = creaturePointer->prototype;  // Referenz zum Prototyp
 
-    for (int y=0; y<default_world_size_y_ ; y++){
-    	for (int x=0; x<default_world_size_x_ ; x++){
-    		smell_map.at(y).at(x) *= 0.5;
-    	}
+        if (prototype.sustentation() == creature_prototype::herbivore && prototype.habitat() == creature_prototype::habitat_land)
+        {
+            map_smell.addSmell(creaturePointer->x(),creaturePointer->y());
+        }
     }
+//      Testausgabe
+//    map_smell.print();
 
-    new_smell_map = smell_map;
-
-
-    for (int y=0; y<default_world_size_y_ ; y++){
-    	for (int x=0; x<default_world_size_x_ ; x++){
-
-    		// expand smell
-    		for (int d_y=-1; d_y<=1; d_y++){
-    			for (int d_x=-1; d_x<=1; d_x++){
-    				if (y+d_y>=0 && y+d_y < default_world_size_y_){
-    					if (x+d_x>=0 && x+d_x < default_world_size_x_){
-    						if (smell_map.at(y+d_y).at(x+d_x) > 0.01 && smell_map.at(y+d_y).at(x+d_x)*0.2 > smell_map.at(y).at(x))
-    							new_smell_map.at(y).at(x) = smell_map.at(y+d_y).at(x+d_x)*0.2;
-    					}
-    				}
-    			}
-    		}
-    	}
-    }
-
-    smell_map = new_smell_map;
+    // Queue für die Kreaturen, die entfernt werden müssen (löschen beim Iterieren der Liste endet sonst böse):
+    std::queue<std::shared_ptr<creature>> creaturesToRemove;
 
 
-    int i = 0;
     // Alle Kreaturen durchlaufen:
     for(it = creatures_.begin(); it != creatures_.end(); ++it)
     {
@@ -310,10 +383,27 @@ void model::perform_step()
          */
         makeAction(sharedPointer, creaturePointer->state);
 
+
+        // In jeder Runde erhöht sich das Alter der Kreatur
+        creaturePointer->lifetime-= 1;
+
+        //
+//        creaturePointer->lifepoints-= 1;
+
+    }
+
+    // Schleife zum Entfernen der Kreaturen
+    for(it = creatures_.begin(); it != creatures_.end(); ++it)
+    {
+        creature *creaturePointer;
+        std::shared_ptr<creature> *sharedPointer = &*it; // Pointer zu shared pointer
+        creaturePointer = sharedPointer->get(); // Pointer zum "richtigen" Creature-Objekt
+
+        const creature_prototype& prototype = creaturePointer->prototype;  // Referenz zum Prototyp
+
         // Position der Kreatur:
         int x = creaturePointer->x();
         int y = creaturePointer->y();
-
 
         // Feld und Feldtyp:
         world_tile& tile = map_.at(x,y);
@@ -322,22 +412,14 @@ void model::perform_step()
         // Lebensraum der Kreatur:
         creature_prototype::habitat_type habitat = prototype.habitat();
 
-
-        // In jeder Runde erhï¿½ht sich das Alter der Kreatur
-        creaturePointer->lifetime-= 1;
-
-        // In jeder Runde reduzieren sich die Lebenspunkte jeder Kreatur um 1
-        creaturePointer->lifepoints--;
-
         // Kreatur bereits tot?
         if(creaturePointer->dead == true)
         {
-//            std::cout << "dead" << std::endl;
             int temp = creaturePointer->numOfDeadRounds;
             temp++;
             creaturePointer->numOfDeadRounds = temp;
 
-            // Nach 3 Runden tote Kreatur speichern, um sie anschlieï¿½end zu lï¿½schen:
+            // Nach 3 Runden tote Kreatur speichern, um sie anschließend zu löschen...
             if(creaturePointer->numOfDeadRounds == 3)
             {
                 creaturesToRemove.push(*sharedPointer);
@@ -348,7 +430,7 @@ void model::perform_step()
             // Wenn die Kreatur normalerweise im Wasser lebt ...
             if (habitat == creature_prototype::habitat_water)
             {
-                // ... dann prï¿½fe, ob sie gerade NICHT auf einem Wasserfeld ist:
+                // ... dann prüfe, ob sie gerade NICHT auf einem Wasserfeld ist:
                 if(!((climate == world_tile::deep_water) || (climate == world_tile::shallow_water)))
                 {
                     // Lebenspunkte um 50 erniedrigen und zuweisen:
@@ -374,13 +456,6 @@ void model::perform_step()
                 else
                 {
                     // alles in Ordnung
-
-                	// ist die Kreatur eine Kuh, stinkt sie
-                	if (creaturePointer->prototype.name() == "Kuh"){
-                		if (smell_map.at(y).at(x) +100 > 500)
-                			smell_map.at(y).at(x) =500;
-                		else smell_map.at(y).at(x) += 100;
-                	}
                 }
             }
 
@@ -388,11 +463,16 @@ void model::perform_step()
             if(creaturePointer->lifepoints <= 0 || creaturePointer->lifetime <= 0)
             {
                 creaturePointer->dead = true;
+
+                // Pflanzen werden sofort entfernt
+                if(prototype.sustentation() == creature_prototype::plant)
+                {
+                    creaturesToRemove.push(*sharedPointer);
+                }
             }
         }
     }
-
-    // Zum Schluss noch Kreaturen lï¿½schen, die seit 3 Runden tot sind:
+    // Zum Schluss noch Kreaturen löschen, die seit 3 Runden tot sind:
     while (!creaturesToRemove.empty())
     {
         std::shared_ptr<creature> temp = creaturesToRemove.front();
@@ -400,11 +480,20 @@ void model::perform_step()
         destroy_creature(temp);
     }
 
+    // Leere Herden löschen
+    for (auto iter = emu_flocks.begin(); iter != emu_flocks.end(); iter++)
+    {
+        if (iter->size() == 0)
+        {
+            iter = emu_flocks.erase(iter);
+        }
+    }
+
     /**
         Statistiken ausgeben
         */
 
-    int kuehe = 0, pferde = 0, schafe = 0, emus = 0, tiger = 0;
+    int kuehe = 0, pferde = 0, schafe = 0, emus = 0;
     for(it = creatures_.begin(); it != creatures_.end(); ++it)
     {
         creature *creaturePointer;
@@ -412,11 +501,6 @@ void model::perform_step()
         creaturePointer = sharedPointer->get(); // Pointer zum "richtigen" Creature-Objekt
 
         const creature_prototype& prototype = creaturePointer->prototype;  // Referenz zum Prototyp
-
-        if (prototype.name() == "Tiger")
-        {
-            tiger++;
-        }
 
         if (prototype.name() == "Kuh")
         {
@@ -426,451 +510,559 @@ void model::perform_step()
         {
             pferde++;
         }
-                else  if (prototype.name() == "Schaf")
+        else  if (prototype.name() == "Schaf")
         {
             schafe++;
         }
-                else  if (prototype.name() == "Emu")
+        else  if (prototype.name() == "Emu")
         {
             emus++;
         }
 
     }
 
-    std::cout << "\r";
-    std::cout << " Runde " << std::setw(5) << ++turn << " | ";
-    std::cout << " Kuehe: " << std::setw(3) << kuehe << " | ";
-    std::cout << " Pferde: " << std::setw(3) << pferde << " | ";
-    std::cout << " Schafe: " << std::setw(3) << schafe << " | ";
-    std::cout << " Emus: " << std::setw(3) << emus << " | ";
-    std::cout.flush();
+//    std::cout << "\r";
+//    std::cout << " Runde " << std::setw(5) << ++turn << " | ";
+//    std::cout << " Kuehe: " << std::setw(3) << kuehe << " | ";
+//    std::cout << " Pferde: " << std::setw(3) << pferde << " | ";
+//    std::cout << " Schafe: " << std::setw(3) << schafe << " | ";
+//    std::cout << " Emus: " << std::setw(3) << emus << " | ";
+//    std::cout.flush();
 }
 
-/**
- * Actionen pro Gattung. (c) Christian Wolf, mit geringfÃ¼gigen Ã„nderungen
+/*
+ * Übung 2 Aufgabe 1
+ * Methode, welche eine Aktion mit Hilfe des Zustandes einer Kreatur berechnet. Die Kreatur macht dabei eine Aktion.
  *
  */
-void model::actionPlant(std::shared_ptr<creature>* c, int currentState)
-{
-
-	int x = c->get()->x();
-	int y = c->get()->y();
-
-	// Alter bestimmen (= Differenz aus aktueller und maximaler Lebensdauer
-	int age = c->get()->prototype.lifetime() - c->get()->lifetime;
-
-	// Frequenz mit der sich die Pflanze vermehrt (neue Spalte in der CreatureTable.txt)
-	int repFreq = c->get()->prototype.repFreq();
-
-	if( (age >= repFreq) && age%repFreq == 0)  // Nur Fortpflanzen, wenn mind. so alt wie die Frequenz und dann nur alle reqFreq Runden
-	{
-
-		// Finde benachbarte Kreaturen der selben Gattung
-		int same_species = 0;
-
-		std::list<std::shared_ptr<creature>> nearby_creatures = locator(c,1);
-
-		for (auto iter = nearby_creatures.begin(); iter != nearby_creatures.end(); iter++)
-		{
-			if ((*iter)->prototype.name() == c->get()->prototype.name() && !((*iter)->dead))
-			{
-				same_species++;
-			}
-		}
-
-		// Falls mind. 2 gleiche Pflanzen in angrenzenden Feldern sind
-		if (same_species >= 2)
-		{
-			// Finde passendes Feld, das auch noch leer sein muss
-			if (findValidNeighbor(c,x,y) && isEmpty(x,y))
-			{
-				// Neue Pflanze auf dem Feld erstellen
-				create_creature(c->get()->prototype,x, y);
-			}
-		}
-	}
-
-}
-int model::actionHerbivore(std::shared_ptr<creature>* c, int currentState)
-{
-
-	int x = c->get()->x();
-	int y = c->get()->y();
-
-	// Ein Pflanzenfresser gilt als satt, wenn der Sï¿½ttigung >= 80
-	if (c->get()->hunger >= 80)
-	{
-		// Dann Counter erhï¿½hen, der angibt seit wie vielen Runden der Pflanzenfresser satt ist
-		c->get()->full_count++;
-	}
-	else
-	{
-		// Sonst Counter zurï¿½cksetzen
-		c->get()->full_count = 0;
-	}
-
-	// Falls die Kreatur mind. so oft kontinuierlich satt war, wie die Frequenz angibt, gehe direkt in den REPRODUCE-Zustand
-	if (c->get()->full_count >= c->get()->prototype.repFreq())
-	{
-		currentState = creature::REPRODUCE;
-	}
-
-	std::list<std::shared_ptr<creature>> env;
-	std::list<std::shared_ptr<creature>>::iterator iter;
-
-	switch(currentState)
-	{
-	case creature::INITIAL_STATE:
-		// Im Initial State erst einmal Umgebung erkunden:
-		currentState = creature::DISCOVER;
-		break;
-
-	case creature::EAT:
-		/* Hier sollte man essen bzw. wenn das Essen verbraucht ist, nach neuem suchen bzw. Feinden ausweichen. */
-
-		env = locator(c,0);
-
-		// Schauen ob noch essen da ist
-		for (iter = env.begin(); iter != env.end(); iter++)
-		{
-			const creature_prototype& prototype = (*iter)->prototype;
-
-			// Essen gibt es noch, falls noch eine Pflanze da ist, die auch noch lebt
-			if (prototype.sustentation() == creature_prototype::plant && !(*iter)->dead)
-			{
-				break;
-			}
-		}
-
-		// Falls kein Futter mehr da ist -> Erkunde die Umgebung
-		if (iter == env.end())
-		{
-			currentState = creature::DISCOVER;
-		}
-
-		// Sonst essen
-		// Dadurch erhï¿½ht sich die Sï¿½ttigkeit um 5
-		c->get()->hunger += 5;
-
-		// Maximale Sï¿½ttigkeit ist 100
-		if (c->get()->hunger > 100)
-		{
-			c->get()->hunger = 100;
-		}
-
-		// Alle Pflanzen in der Zelle verlieren 5 Lebenspunkte
-		for (iter = env.begin(); iter != env.end(); iter++)
-		{
-			const creature_prototype& prototype = (*iter)->prototype;
-
-			if (prototype.sustentation() == creature_prototype::plant)
-			{
-				(*iter)->lifepoints -= 5;
-
-				// Dadurch stirbt die Pflanze eventuell
-				if((*iter)->lifepoints <= 0)
-				{
-					(*iter)->dead = true;
-				}
-			}
-		}
-		break;
-
-	case creature::DISCOVER:
-		/* Hier sollte man prï¿½fen, ob Feinde in der Nï¿½he sind oder ob es etwas zu essen gibt. Je nachdem wird dann der Zustand gesetzt. */
-
-		// Betrachte Umgebung von 5 Feldern
-		env = locator(c, 5);
-
-		// Sind Feinde da?
-		for (iter = env.begin(); iter != env.end(); iter++)
-		{
-			const creature_prototype& prototype = (*iter)->prototype;
-
-			// Man muss sich nur Sorgen machen um Feinde, die den gleichen Lebensraum haben (Haie fressen keine Kï¿½he)
-			if (prototype.habitat() == c->get()->prototype.habitat() && prototype.sustentation() == creature_prototype::carnivore)
-			{
-				// Wenn Feinde da sind -> Wechsle in RUN-Zustand
-				currentState = creature::RUN;
-				break;
-			}
-		}
-
-		// Falls man einen Feind gefunden hat -> ï¿½ndere den Zustand
-		if (iter != env.end())
-		{
-			break;
-		}
-
-
-		// Nur eigenes Feld betrachten
-		env = locator(c,0);
-
-		// Ist Futter da?
-		for (iter = env.begin(); iter != env.end(); iter++)
-		{
-			const creature_prototype& prototype = (*iter)->prototype;
-
-			if (prototype.habitat() == c->get()->prototype.habitat() && prototype.sustentation() == creature_prototype::plant && !(*iter)->dead)
-			{
-				// Wenn Futter da ist -> Wechsel in EAT-Zustand
-				currentState = creature::EAT;
-				break;
-			}
-		}
-
-		// Falls man Futter gefunden hat -> ï¿½ndere den Zustand
-		if (iter != env.end())
-		{
-			break;
-		}
-
-		// Falls keine Feinde da sind und auch kein Futter -> Weiter Erkunden
-		if (findValidNeighbor(c,x,y))
-			move_creature(*c,x,y);
-
-		break;
-
-	case creature::RUN:
-
-		env = locator(c, 5);
-
-		// Schauen, ob Feind noch in der Nï¿½he ist
-		for (iter = env.begin(); iter != env.end(); iter++)
-		{
-			const creature_prototype& prototype = (*iter)->prototype;
-
-			// Man muss sich nur Sorgen machen um Feinde, die den gleichen Lebensraum haben (Haie fressen keine Kï¿½he)
-			if (prototype.habitat() == c->get()->prototype.habitat() && prototype.sustentation() == creature_prototype::carnivore)
-			{
-				// Wenn Feind noch nah ist -> laufe weiterhin weg
-				break;
-			}
-		}
-
-
-		// Falls kein Feind mehr in der Nï¿½he -> ï¿½ndere den Zustand
-		if (iter == env.end())
-		{
-			// Gehe wieder in Initialzustand
-			currentState = creature::INITIAL_STATE;
-			break;
-		}
-
-		// Falls der Feind noch da ist -> Laufe in zufï¿½llige Richtung
-		if (findValidNeighbor(c,x,y))
-			move_creature(*c,x,y);
-
-		break;
-
-	case creature::REPRODUCE:
-
-		// Neue Kreatur auf eigenem Feld platzieren
-		create_creature(c->get()->prototype,x, y);
-
-		// Vermehren macht hungrig -> Hunger zurï¿½cksetzen
-		c->get()->hunger = 0;
-
-		// Neuer Zustand nach Reproduce
-		currentState = creature::INITIAL_STATE;
-		break;
-
-	case creature::DO_NOTHING:
-		// Wird im Moment nie erreicht
-		/* Hier sollte man auch prï¿½fen, ob Feinde in der Nï¿½he sind bzw. Nahrung. */
-		// nicht tun
-		break;
-	}
-
-	// Wenn die Kreatur gerade nicht isst -> Sï¿½ttigkeit reduzieren
-	if (currentState != creature::EAT)
-		c->get()->hunger -= 5;
-
-	// Nicht unter 0
-	if (c->get()->hunger < 0)
-		c->get()->hunger = 0;
-
-	return currentState;
-}
-int model::actionCarnivore(std::shared_ptr<creature>* c, int currentState)
-{
-
-	int x = c->get()->x();
-	int y = c->get()->y();
-
-	switch(currentState)
-	{
-	case creature::REPRODUCE:
-		// Neue Kreatur erstellen auf eigenem Feld erstellen
-		create_creature(c->get()->prototype,x,y,c->get()->getSmellAwareness());
-
-		// Hunger-Memory lï¿½schen (damit nicht gleich noch mehr Kreaturen entstehen)
-		c->get()->hunger_memory.clear();
-
-		// Neuer Zustand nach Fortpflanzung
-		currentState = creature::INITIAL_STATE;
-		break;
-
-	default:
-
-
-		bool victim = false;
-
-		std::list<std::shared_ptr<creature>> env;
-		std::list<std::shared_ptr<creature>>::iterator iter;
-
-		env = locator(c,0);
-
-		// Schauen, ob Beute im eigenen Feld ist
-		for (iter = env.begin(); iter != env.end(); iter++)
-		{
-			const creature_prototype& prototype = (*iter)->prototype;
-
-			// Man muss sich nur Sorgen machen um Beute, die den gleichen Lebensraum haben
-			if (prototype.habitat() == c->get()->prototype.habitat() && prototype.sustentation() == creature_prototype::herbivore)
-			{
-				// Wenn Beute da ist greife an
-				victim = true;
-				break;
-			}
-		}
-
-		std::pair<int,int> next_move(y,x);
-
-		for (int d_y=-1; d_y<=1; d_y++){
-			for (int d_x=-1;d_x<=1; d_x++){
-				if (y+d_y >= 0 && y+d_y < default_world_size_y_){
-					if (x+d_x >=0 && x+d_x < default_world_size_x_){
-						if (smell_map.at(y+d_y).at(x+d_x) > smell_map.at(y).at(x)){
-							next_move = std::make_pair(y+d_y, x+d_x);
-						}
-					}
-				}
-			}
-		}
-
-		// Falls es keinen geruch zum verfolgen gibt --> zufÃ¤llige Bewegung
-		if ((next_move.first == y) && (next_move.second == x)){
-			if(findValidNeighbor(c,x,y)){
-				move_creature(*c,x,y);
-			}
-		}
-
-		// ansonsten Bewegung entlang der stÃ¤rksten Geruchsspur
-		else {
-			move_creature(*c, next_move.second,next_move.first);
-		}
-
-		env = locator(c,0); //Befindet sich Beute im aktuellen Feld;
-
-		// Schauen, ob nach der Bewegung Beute im eigenen Feld ist
-		for (iter = env.begin(); iter != env.end(); iter++)
-		{
-			const creature_prototype& prototype = (*iter)->prototype;
-
-			// Man muss sich nur Sorgen machen um Beute, die den gleichen Lebensraum haben
-			if (prototype.habitat() == c->get()->prototype.habitat() && prototype.sustentation() == creature_prototype::herbivore)
-			{
-				// Wenn Beute da ist greife an
-				victim = true;
-				break;
-			}
-		}
-
-
-		// Der Angriff auf ein Beutetier wird durch Wï¿½rfelwurf simuliert
-		int rnd = randomNumberMinMax(1,20);
-
-		if (rnd != 1 && victim == true)
-		{
-			// Bei einer 2-20 ist die Kreatur in der aktuellen Runde satt und die Beute tot
-			c->get()->hunger_memory.push_back(true);
-
-			for (iter = env.begin(); iter != env.end(); iter++)
-			{
-				const creature_prototype& prototype = (*iter)->prototype;
-
-				if (prototype.habitat() == c->get()->prototype.habitat() && prototype.sustentation() == creature_prototype::herbivore)
-				{
-					//Beute ist tot
-					(*iter)->dead= true;
-					break;
-				}
-			}
-
-
-		}
-		else
-		{
-			// Sonst ist sie hungrig
-			c->get()->hunger_memory.push_back(false);
-		}
-
-		// Nur die letzten 10 Runden merken
-		if (c->get()->hunger_memory.size() > 10)
-		{
-			c->get()->hunger_memory.pop_front();
-		}
-
-		// Betrachte die letzten 10 Runden
-		if (c->get()->hunger_memory.size() == 10)
-		{
-			int counter = 0;
-			//                for (bool nothungry : c->get()->hunger_memory)
-			for (auto iter = c->get()->hunger_memory.begin(); iter != c->get()->hunger_memory.end(); iter++)
-			{
-				if (*iter)
-					counter++;
-			}
-
-			// Falls die Kreatur in den letzten 10 Runden mind. repFreq mal satt war
-			if (counter >= c->get()->prototype.repFreq())
-			{
-				// In Reproduce-Zustand wechseln
-				currentState = creature::REPRODUCE;
-			}
-		}
-
-		// Die Kreatur bewegt sich in ein angrenzendes Feld (falls es eines gibt)
-		if (findValidNeighbor(c,x,y))
-			move_creature(*c,x,y);
-
-		break;
-	}
-
-	return currentState;
-}
-
-/*
-* ï¿½bung 2 Aufgabe 1
-* Methode, welche eine Aktion mit Hilfe des Zustandes einer Kreatur berechnet. Die Kreatur macht dabei eine Aktion.
-*
-*/
-
 void model::makeAction(std::shared_ptr<creature>* c, int currentState)
 {
-	// Tote Kreaturen kï¿½nnen keine Aktionen machen
-	if (c->get()->dead == true)
-		return;
+    // Tote Kreaturen können keine Aktionen machen
+    if (c->get()->dead == true)
+        return;
 
-	// Zunï¿½chst Pflanzen betrachten
-	if (c->get()->prototype.sustentation() == creature_prototype::plant)
-		actionPlant(c, currentState);
-	// Pflanzenfresser betrachten
-	else if(c->get()->prototype.sustentation() == creature_prototype::herbivore)
-		currentState = actionHerbivore(c, currentState);
-	// Fleischfresser betrachten
-	else if (c->get()->prototype.sustentation() == creature_prototype::carnivore)
-		currentState = actionCarnivore(c, currentState);
-
-	// Neuen Zustand ï¿½bernehmen
-	(*c)->state = currentState;
+    // Pflanzen betrachten
+    if (c->get()->prototype.sustentation() == creature_prototype::plant)
+    {
+        (*c)->state = makeActionPlant(c);
+    }
+    // Pflanzenfresser betrachten
+    else if(c->get()->prototype.sustentation() == creature_prototype::herbivore)
+    {
+        (*c)->state = makeActionHerbivore(c);
+    }
+    // Fleischfresser betrachten
+    else if (c->get()->prototype.sustentation() == creature_prototype::carnivore)
+    {
+        (*c)->state = makeActionCarnivore(c);
+    }
 
 }
 
+int model::makeActionPlant(std::shared_ptr<creature>* c)
+{
+    int x = c->get()->x();
+    int y = c->get()->y();
+
+    int currentState = (*c)->state;
+
+    // Alter bestimmen (= Differenz aus aktueller und maximaler Lebensdauer)
+    int age = c->get()->prototype.lifetime() - c->get()->lifetime;
+
+    // Frequenz mit der sich die Pflanze vermehrt (neue Spalte in der CreatureTable.txt)
+    int repFreq = c->get()->prototype.repFreq();
+
+    if( (age >= repFreq) && age%repFreq == 0)  // Nur Fortpflanzen, wenn mind. so alt wie die Frequenz und dann nur alle reqFreq Runden
+    {
+
+        // Finde benachbarte Kreaturen der selben Gattung
+        int same_species = 0;
+
+        std::list<std::shared_ptr<creature>> nearby_creatures = locator(c,1);
+
+        for (auto iter = nearby_creatures.begin(); iter != nearby_creatures.end(); iter++)
+        {
+            if ((*iter)->prototype.name() == c->get()->prototype.name() && !((*iter)->dead))
+            {
+                same_species++;
+            }
+        }
+
+        // Falls mind. 2 gleiche Pflanzen in angrenzenden Feldern sind
+        if (same_species >= 2)
+        {
+            // Finde passendes Feld, das auch noch leer sein muss
+            if (findValidNeighbor(c,x,y) && isEmpty(x,y))
+            {
+                // Neue Pflanze auf dem Feld erstellen
+                create_creature(c->get()->prototype,x, y);
+            }
+        }
+    }
+
+    return currentState;
+}
+
+int model::makeActionHerbivore(std::shared_ptr<creature>* c)
+{
+//    std::cout << "makeActionHerbivore: Lifepoints: " << c->get()->lifepoints << std::endl;
+
+    int x = c->get()->x();
+    int y = c->get()->y();
+
+    int currentState = (*c)->state;
+
+    // Ein Pflanzenfresser gilt als satt, wenn der Sättigung >= 80
+    if (c->get()->hunger >= 90)
+    {
+        // Dann Counter erhöhen, der angibt seit wie vielen Runden der Pflanzenfresser satt ist
+        c->get()->full_count++;
+    }
+    else
+    {
+        // Sonst Counter zurücksetzen
+        c->get()->full_count = 0;
+    }
+
+    // Falls die Kreatur zu hungrig ist verliert sie Lebenspunkte
+//    if (c->get()->hunger < 10)
+//    {
+//        c->get()->lifepoints -= 1;
+//    }
+
+    // Falls die Kreatur mind. so oft kontinuierlich satt war, wie die Frequenz angibt, gehe direkt in den REPRODUCE-Zustand
+    if (c->get()->isFull())
+    {
+        currentState = creature::REPRODUCE;
+    }
+
+    switch(currentState)
+    {
+    case creature::INITIAL_STATE:
+        // Im Initial State erst einmal Umgebung erkunden:
+        currentState = creature::DISCOVER;
+
+        break;
+
+    case creature::EAT:
+
+        if (enemyNearby(c))
+        {
+            currentState = creature::RUN;
+            break;
+        }
+
+        // Schaue, ob noch Futter da ist
+        if (!foodAvailable(c))
+        {
+            // Wenn nicht, gehe in Discover
+            currentState = creature::DISCOVER;
+        }
+        else
+        {
+            // Sonst essen
+            // Dadurch erhöht sich die Sättigkeit um 5
+            c->get()->hunger += 5;
+
+            // Maximale Sättigkeit ist 100
+            if (c->get()->hunger > 100)
+            {
+                c->get()->hunger = 100;
+            }
+
+            // Reduziere Lebenspunkte aller Pflanzen in der Zelle der Kreatur
+            reducePlantHP(c);
+
+            // Die Kreatur bleibt nach dem Essen im aktuellen Feld stehen
+            c->get()->move_queue.clear();
+            c->get()->moveNot();
+        }
+        break;
+
+    case creature::DISCOVER:
+
+        // Schaue ob Feinde in der Nähe sind
+        if (enemyNearby(c))
+        {
+            // Wenn ja, wechsle in Run-Zustand
+            currentState = creature::RUN;
+        }
+        // Schaue, ob Futter da ist
+        else if (foodAvailable(c))
+        {
+            // Wenn ja, gehe in Eat-Zustand
+            currentState = creature::EAT;
+
+            // Dann soll sich die Kreatur nicht weiter bewegen
+            c->get()->move_queue.clear();
+            c->get()->moveNot();
+        }
+        else
+        {
+            // Die Kreatur läuft in die Richtung, die von der Gruppe bestimmt wurde
+        }
+
+        break;
+
+    case creature::RUN:
+
+        // Schaue ob noch Feinde da sind
+        if (!enemyNearby(c))
+        {
+            // Falls kein Feind mehr in der Nähe -> Gehe wieder in Initialzustand
+            currentState = creature::INITIAL_STATE;
+
+            c->get()->move_queue.clear();
+        }
+        else
+        {
+            // Die Kreatur wählt zufällige Richtung
+            c->get()->moveRandom();
+        }
+
+        break;
+
+    case creature::REPRODUCE:
+    {
+
+        // Neue Kreatur auf eigenem Feld platzieren
+        auto child = create_creature(c->get()->prototype,x, y);
+
+        // Neue Kreatur einer Herde zuweisen (der Herde, deren Mittelpunkt am nächsten liegt)
+        addToFlock(child.lock());
+
+        // Vermehren macht hungrig -> Hunger zurücksetzen
+        c->get()->hunger = 25;
+
+        // Neuer Zustand nach Reproduce
+        currentState = creature::INITIAL_STATE;
+        }
+        break;
+
+    case creature::VOTED:
+
+        std::cout << "in VOTED" << std::endl;
+        std::cout << "move_queue.size(): " << c->get()->move_queue.size() << std::endl;
+        if (c->get()->move_queue.size() == 0)
+            currentState = creature::INITIAL_STATE;
+        break;
+
+
+    case creature::DO_NOTHING:
+        // Wird im Moment nie erreicht
+        /* Hier sollte man auch prüfen, ob Feinde in der Nähe sind bzw. Nahrung. */
+        // nicht tun
+        break;
+    }
+
+    // Wenn die Kreatur gerade nicht isst -> Sättigkeit reduzieren
+    if (currentState != creature::EAT)
+        c->get()->hunger -= 5;
+
+    // Nicht unter 0
+    if (c->get()->hunger < 0)
+        c->get()->hunger = 0;
+
+    // Am Ende die Bewegung durchführen
+    // Neue Bewegung in Schlange aufnehmen, entsprechend der bevorzugten Richtung der Kreatur
+    c->get()->addMove();
+
+    int new_x, new_y;
+    // Die Kreatur wird "gefragt" wohin sie will
+    c->get()->getMove(new_x, new_y);
+    // Falls das ein gültiges Feld ist, wird die Bewegung ausgeführt
+    if (c->get()->prototype.habitat() == creature_prototype::habitat_land)
+    {
+        if (isPossibleLandType(new_x,new_y))
+        {
+            move_creature(*c,new_x, new_y);
+        }
+    }
+    else
+    {
+        if (isPossibleWaterType(new_x,new_y))
+        {
+            move_creature(*c,new_x, new_y);
+        }
+    }
+
+
+
+    return currentState;
+}
+
+int model::makeActionCarnivore(std::shared_ptr<creature>* c)
+{
+//    std::cout << "makeActionCarnivore: Lifepoints: " << c->get()->lifepoints << std::endl;
+    int x = c->get()->x();
+    int y = c->get()->y();
+
+    int currentState = (*c)->state;
+
+    // Falls die Kreatur in 10 Runden niemals satt war werden die Lebenspunkte reduziert
+//    if (c->get()->hunger_memory.size() == 10 && c->get()->getFullRounds() == 0)
+//    {
+//        c->get()->lifepoints -= 1;
+//    }
+
+
+    switch(currentState)
+    {
+    case creature::INITIAL_STATE:
+
+        // Fleischfresser geht direkt auf die Jagd
+        currentState = creature::HUNT;
+        break;
+
+    case creature::REPRODUCE:
+
+        // Neue Kreatur erstellen auf eigenem Feld erstellen, Geruchsschwelle wird übernommen
+        create_creature(c->get()->prototype,x,y,c->get()->smell_threshold);
+
+        // Hunger-Memory löschen (damit nicht gleich noch mehr Kreaturen entstehen)
+        c->get()->hunger_memory.clear();
+
+        // Neuer Zustand nach Fortpflanzung
+        currentState = creature::INITIAL_STATE;
+        break;
+
+    case creature::HUNT:
+
+    {
+        // Wenn die Kreatur schon satt ist, gehe in Reproduce
+        if (c->get()->isFull())
+        {
+            currentState = creature::REPRODUCE;
+        }
+        // Sonst gehe auf die Jagd
+        else
+        {
+            bool hunt_success = false;
+
+            // Schaue ob Beute auf dem Feld ist
+            if (foodAvailable(c))
+            {
+                // Zufallszahl bestimmen
+                int rnd = randomNumberMinMax(1,20);
+
+                // Falls != 1 ist die Jagd erfolgreich
+                if (rnd != 1)
+                {
+                    hunt_success = true;
+
+                    // Töte Pflanzenfresser auf eigenem Feld
+                    killPrey(c);
+                }
+                // Sonst ist die Jagd fehlgeschlagen
+                else
+                {
+                    hunt_success = false;
+                }
+            }
+            // Falls auf dem eigenen Feld keine Beute ist, ins Nachbarfeld bewegen
+            else
+            {
+
+                int x_old = x, y_old = y;
+
+                // Die Kreatur bewegt sich in das angrenzende Feld, in dem es am stärksten nach Beute riecht
+                if (map_smell.strongestSmell(x,y,c->get()->smell_threshold) && isPossibleLandType(x,y))
+                {
+                    move_creature(*c,x,y);
+                }
+                else
+                {
+                    x = x_old;
+                    y = y_old;
+
+                    if (findValidNeighbor(c,x,y))  // Wenn es nirgends riecht, oder überall gleich, dann zufällig bewegen
+                    {
+                        move_creature(*c,x,y);
+                    }
+                }
+
+                // Dort nochmal jagen
+                if (foodAvailable(c))
+                {
+
+                    // Zufallszahl bestimmen
+                    int rnd = randomNumberMinMax(1,20);
+
+                    // Falls != 1 ist die Jagd erfolgreich
+                    if (rnd != 1)
+                    {
+                        hunt_success = true;
+
+                        killPrey(c);
+                    }
+                    // Sonst ist die Jagd fehlgeschlagen
+                    else
+                    {
+                        hunt_success = false;
+                    }
+                }
+            }
+
+            // Ergebnis der Jagd speichern
+            c->get()->hunger_memory.push_back(hunt_success);
+            // Nur die letzten 10 Runden merken
+            if (c->get()->hunger_memory.size() > 10)
+            {
+                c->get()->hunger_memory.pop_front();
+            }
+        }
+
+        break;
+    }
+
+    }
+
+    return currentState;
+}
+
+void model::addToFlock(std::shared_ptr<creature>c)
+{
+    int min_distance = default_world_size_x_ + default_world_size_y_;
+
+    int flock_x, flock_y, creature_x, creature_y;
+    creature_x = c->x();
+    creature_y = c->y();
+
+    auto min_iter = emu_flocks.end();
+
+    for (auto iter = emu_flocks.begin(); iter != emu_flocks.end(); iter++)
+    {
+        iter->calcCenter(flock_x, flock_y);
+
+        if (abs(flock_x - creature_x) + abs(flock_y - creature_y) < min_distance)
+        {
+            min_distance = abs(flock_x - creature_x) + abs(flock_y - creature_y);
+            min_iter = iter;
+        }
+    }
+
+    if (min_iter != emu_flocks.end())
+        min_iter->addCreature(c);
+}
+
 /*
- * ï¿½bung 2 Aufgabe 2
- * Methode, welche die Kreaturen im Umkreis der ï¿½bergebenen Kreatur zurï¿½ckgibt.
+    Methode, die überprüft, ob ein Feind in der Nähe ist
+    */
+bool model::enemyNearby(std::shared_ptr<creature>*c)
+{
+    // Betrachte Umgebung von 2 Feldern
+    std::list<std::shared_ptr<creature>> env = locator(c, 2);
+    std::list<std::shared_ptr<creature>>::iterator iter;
+
+    // Schauen, ob Feind noch in der Nähe ist
+    for (iter = env.begin(); iter != env.end(); iter++)
+    {
+        const creature_prototype& prototype = (*iter)->prototype;
+
+        // Man muss sich nur Sorgen machen um Feinde, die den gleichen Lebensraum haben (Haie fressen keine Kühe)
+        if (prototype.habitat() == c->get()->prototype.habitat() && prototype.sustentation() == creature_prototype::carnivore)
+        {
+            break;
+        }
+    }
+
+    return (iter != env.end());
+}
+
+/*
+    Methode, die überprüft, ob Futter auf dem eigenen Feld ist
+    */
+bool model::foodAvailable(std::shared_ptr<creature>*c)
+{
+    // Nur eigenes Feld betrachten
+    std::list<std::shared_ptr<creature>> env = locator(c, 0);
+    std::list<std::shared_ptr<creature>>::iterator iter;
+
+    // Ist Futter da?
+
+    // Pflanzenfresser
+    if (c->get()->prototype.sustentation() == creature_prototype::herbivore)
+    {
+        for (iter = env.begin(); iter != env.end(); iter++)
+        {
+            const creature_prototype& prototype = (*iter)->prototype;
+
+            if (prototype.habitat() == c->get()->prototype.habitat() && prototype.sustentation() == creature_prototype::plant && !(*iter)->dead)
+            {
+                break;
+            }
+        }
+    }
+    // Fleischfresser
+    else if (c->get()->prototype.sustentation() == creature_prototype::carnivore)
+    {
+        for (iter = env.begin(); iter != env.end(); iter++)
+        {
+            const creature_prototype& prototype = (*iter)->prototype;
+
+            if (prototype.habitat() == c->get()->prototype.habitat() && prototype.sustentation() == creature_prototype::herbivore && !(*iter)->dead)
+            {
+                break;
+            }
+        }
+    }
+
+    // Falls man Futter gefunden hat -> Ändere den Zustand
+    return (iter != env.end());
+}
+
+/*
+    Methode, die die Lebenspunkte aller Pflanzen im Feld der übergebenen Kreatur reduziert
+    */
+void model::reducePlantHP(std::shared_ptr<creature>*c)
+{
+    std::list<std::shared_ptr<creature>> env = locator(c, 0);
+    std::list<std::shared_ptr<creature>>::iterator iter;
+
+    // Alle Pflanzen in der Zelle verlieren 5 Lebenspunkte
+    for (iter = env.begin(); iter != env.end(); iter++)
+    {
+        const creature_prototype& prototype = (*iter)->prototype;
+
+        if (prototype.sustentation() == creature_prototype::plant)
+        {
+            (*iter)->lifepoints -= 5;
+
+            // Dadurch stirbt die Pflanze eventuell
+            if((*iter)->lifepoints <= 0)
+            {
+                (*iter)->dead = true;
+            }
+        }
+    }
+}
+
+/*
+    Tötet einen Pflanzenfresser auf dem Feld der übergebenen Kreatur
+    */
+void model::killPrey(std::shared_ptr<creature>*c)
+{
+    std::list<std::shared_ptr<creature>> env = locator(c, 0);
+    std::list<std::shared_ptr<creature>>::iterator iter;
+
+    for (iter = env.begin(); iter != env.end(); iter++)
+    {
+        const creature_prototype& prototype = (*iter)->prototype;
+
+        if (prototype.sustentation() == creature_prototype::herbivore && !(*iter)->dead)
+        {
+            (*iter)->lifepoints = 0;
+            (*iter)->dead = true;
+
+            // Nur einen Pflanzenfresser töten
+            break;
+        }
+    }
+}
+
+/*
+ * Übung 2 Aufgabe 2
+ * Methode, welche die Kreaturen im Umkreis der übergebenen Kreatur zurückgibt.
  *
  * (c) Simon Pirkelmann, with minor changes
  */
@@ -908,12 +1100,24 @@ std::list<std::shared_ptr<creature>> model::locator(std::shared_ptr<creature>* c
 
 }
 
+bool model::isPossible(int x, int y)
+{
+    // Ränder prüfen:
+    if (x < 0 || y < 0 || x >= map_.size_x() || y >= map_.size_y())
+    {
+        return false;
+    }
+
+    return true;
+}
+
+
 /*
- * Gibt zurï¿½ck, ob Landlebewesen an diese Stelle gehen kann (z.B. Wasser usw.).
+ * Gibt zurück, ob Landlebewesen an diese Stelle gehen kann (z.B. Wasser usw.).
  */
 bool model::isPossibleLandType(int x, int y)
 {
-    // Rï¿½nder prï¿½fen:
+    // Ränder prüfen:
     if (x < 0 || y < 0 || x >= map_.size_x() || y >= map_.size_y())
     {
         return false;
@@ -933,11 +1137,11 @@ bool model::isPossibleLandType(int x, int y)
 }
 
 /*
- * Gibt zurï¿½ck, ob Wasserlebewesen an diese Stelle gehen kann (z.B. Land usw.).
+ * Gibt zurück, ob Wasserlebewesen an diese Stelle gehen kann (z.B. Land usw.).
  */
 bool model::isPossibleWaterType(int x, int y)
 {
-    // Rï¿½nder prï¿½fen:
+    // Ränder prüfen:
     if (x < 0 || y < 0 || x >= map_.size_x() || y >= map_.size_y())
     {
         return false;
@@ -957,7 +1161,7 @@ bool model::isPossibleWaterType(int x, int y)
 }
 
 /*
-    Gibt zurï¿½ck, ob das Feld (x,y) leer ist
+    Gibt zurück, ob das Feld (x,y) leer ist
     */
 bool model::isEmpty(int x, int y)
 {
@@ -981,9 +1185,9 @@ bool model::isEmpty(int x, int y)
 }
 
 /*
- *  Findet ein zufï¿½lliges passendes Nachbarfeld, fï¿½r die Kreatur
- *  Die ï¿½bergebenen Variablen x, y enthalten danach die Koordinaten eines passenden Felds
- *  Wenn es keins gibt, wird das Feld der Kreatur zurï¿½ckgegeben und false
+ *  Findet ein zufälliges passendes Nachbarfeld, für die Kreatur
+ *  Die Übergebenen Variablen x, y enthalten danach die Koordinaten eines passenden Felds
+ *  Wenn es keins gibt, wird das Feld der Kreatur zurückgegeben und false
  */
 bool model::findValidNeighbor(std::shared_ptr<creature>* c, int & x, int & y)
 {
@@ -1075,7 +1279,7 @@ bool model::findValidNeighbor(std::shared_ptr<creature>* c, int & x, int & y)
 }
 
 /*
- * Gibt eine zufï¿½llige Zahl zwischen 0 und 1 zurï¿½ck.
+ * Gibt eine zufällige Zahl zwischen 0 und 1 zurück.
  */
 int model::randomNumber()
 {
@@ -1085,7 +1289,7 @@ int model::randomNumber()
 }
 
 /*
- * Gibt eine zufï¿½llige Zahl zwischen min und max zurï¿½ck.
+ * Gibt eine zufällige Zahl zwischen min und max zurück.
  */
 int model::randomNumberMinMax(int min, int max)
 {
@@ -1097,9 +1301,35 @@ int model::randomNumberMinMax(int min, int max)
 
 
 std::weak_ptr<creature> model::create_creature
-(const creature_prototype& prototype, int x, int y, double smell_awareness)
+(const creature_prototype& prototype, int x, int y)
 {
-    std::shared_ptr<creature> c(new creature(prototype, x, y, smell_awareness));
+    std::shared_ptr<creature> c(new creature(prototype, x, y));
+
+    if (x < 0 || y < 0 || x >= map_.size_x() || y >= map_.size_y())
+    {
+        std::cerr << "Invalid creature position." << std::endl;
+        throw invalid_parameter();
+    }
+
+    creatures_.push_back(c);
+
+    try
+    {
+        map_.add_creature_to_tile(c);
+    }
+    catch (...)
+    {
+        creatures_.pop_back();
+        throw;
+    }
+
+    return c;
+}
+
+std::weak_ptr<creature> model::create_creature
+(const creature_prototype& prototype, int x, int y, double threshold)
+{
+    std::shared_ptr<creature> c(new creature(prototype, x, y, threshold));
 
     if (x < 0 || y < 0 || x >= map_.size_x() || y >= map_.size_y())
     {
@@ -1141,6 +1371,20 @@ void model::destroy_creature(const std::weak_ptr<creature>& c) NOTHROW
     else
         std::cerr << "Creature not found in global creature list." << std::endl;
 
+    // Kreatur aus Herde entfernen
+    for (auto iter = emu_flocks.begin(); iter != emu_flocks.end(); iter++)
+    {
+        (*iter).removeCreature(csp);
+    }
+//        std::list<std::shared_ptr<creature>>::iterator removeit(std::find(emuflock.begin(), creatures_.end(), csp));
+//
+//    if (removeit != creatures_.end())
+//        creatures_.erase(removeit);
+//    else
+//        std::cerr << "Creature not found in global creature list." << std::endl;
+//    }
+
+
     map_.remove_creature_from_tile(csp);
 }
 
@@ -1164,8 +1408,8 @@ void model::move_creature
 
 const char *model::default_prototype_list_ = "CreatureTable.txt";
 
-const int model::default_world_size_x_ = 100;
-const int model::default_world_size_y_ = 100;
+const int model::default_world_size_x_ = 50;
+const int model::default_world_size_y_ = 50;
 
 
 

@@ -21,6 +21,8 @@
 
 #include "creature.hpp"
 #include "world_map.hpp"
+#include "smell_map.hpp"
+#include "flock.hpp"
 
 
 namespace biosim
@@ -59,18 +61,32 @@ class model
 		void perform_step();
 
 		void makeAction(std::shared_ptr<creature>* c, int currentState); // Zustandsautomat
+		int makeActionPlant(std::shared_ptr<creature>* c);
+		int makeActionHerbivore(std::shared_ptr<creature>* c);
+		int makeActionCarnivore(std::shared_ptr<creature>* c);
 
-                // Kreaturen in Umgebung zurï¿½ckgeben
+                // Kreaturen in Umgebung zurückgeben
 		std::list<std::shared_ptr<creature>> locator(std::shared_ptr<creature>* c, int distance);
 
+        bool isPossible(int x, int y);      // Ist das Feld innerhalb der Karte?
         bool isPossibleLandType(int x, int y); // Kann Landbewohner an diese Stelle gehen?
 		bool isPossibleWaterType(int x, int y);// Kann Wasserbewohner an diese Stelle gehen?
 		bool isEmpty(int x, int y);     // Ist das Feld (x,y) leer?
 		bool findValidNeighbor(std::shared_ptr<creature>* c, int & x, int & y);
 
+        bool foodAvailable(std::shared_ptr<creature>*c);    // Methode, die überprüft, ob es Futter in der Zelle der Kreatur gibt
+		bool enemyNearby(std::shared_ptr<creature>*c);      // Methode, die überprüft, ob Feinde in einer Umgebung der Kreatur sind
+
+		void reducePlantHP(std::shared_ptr<creature>*c);    // Methode, die allen Pflanzen in der Zelle der Kreatur 5 HP abzieht
+		void killPrey(std::shared_ptr<creature>*c);         // Tötet einen Pflanzenfresser auf dem Feld der Kreatur
+
 		int randomNumber();
 
 		int randomNumberMinMax(int min, int max);
+
+		void addToFlock(std::shared_ptr<creature>c);
+
+
 
 
 	private:
@@ -78,23 +94,25 @@ class model
         int turn;
 
 		std::weak_ptr<creature> create_creature
-			(const creature_prototype& prototype, int x, int y, double smell_awareness = 0);
+			(const creature_prototype& prototype, int x, int y);
+
+        std::weak_ptr<creature> create_creature
+            (const creature_prototype& prototype, int x, int y, double threshold);
+
 		void destroy_creature
 			(const std::weak_ptr<creature>& c) NOTHROW;
 
 		void move_creature
 			(const std::weak_ptr<creature>& c, int x, int y);
 
-		void actionPlant    (std::shared_ptr<creature>* c, int currentState);
-		int  actionHerbivore(std::shared_ptr<creature>* c, int currentState);
-		int  actionCarnivore(std::shared_ptr<creature>* c, int currentState);
+        std::list<emuflock> emu_flocks;
 
 
 		std::list<creature_prototype> prototypes_;
 		std::list<std::shared_ptr<creature>> creatures_;
-		world_map map_;
 
-		std::vector<std::vector<double> > smell_map;
+		world_map map_;
+		smell_map map_smell;    // Karte mit Geruchsinformationen für die Fleischfresser
 
 		int cursor_x_;
 		int cursor_y_;

@@ -26,7 +26,7 @@ namespace biosim
 //
 //////////////////////////////////////////////////////////////////////////
 
- 
+
 BEGIN_EVENT_TABLE(sim_area_widget, wxControl)
 	EVT_SIZE(sim_area_widget::resize)
 	EVT_ERASE_BACKGROUND(sim_area_widget::ignore_erase_background)
@@ -86,7 +86,7 @@ void sim_area_widget::paint_world(wxPaintEvent&)
 	wxBufferedPaintDC dc(this);
 
 	dc.SetBackground(wxBrush(wxColor(0,0,0)));
-	dc.Clear();	
+	dc.Clear();
 
 	wxSize client_size(GetClientSize());
 
@@ -95,7 +95,7 @@ void sim_area_widget::paint_world(wxPaintEvent&)
 
 	int tile_x_start = (scroll_x_ - scroll_pixel_x) / tile_size_x;
 	int tile_y_start = (scroll_y_ - scroll_pixel_y) / tile_size_y;
-	int tile_x_end = (scroll_x_ + client_size.GetX() - scroll_pixel_x) / tile_size_x + 1; 
+	int tile_x_end = (scroll_x_ + client_size.GetX() - scroll_pixel_x) / tile_size_x + 1;
 	int tile_y_end = (scroll_y_ + client_size.GetY() - scroll_pixel_y) / tile_size_y + 1;
 
 	for (int y = tile_y_start; y <= tile_y_end; ++y)
@@ -138,7 +138,7 @@ void sim_area_widget::paint_world(wxPaintEvent&)
 			}
 
 			// Wenn die Kreatur tot ist ...
-			if((creaturePointer->dead) == true) {
+			if((creaturePointer->dead) == true && creaturePointer->prototype.sustentation() != creature_prototype::plant) {
 				// ... dann dead.tga zeigen:
 				dc.DrawBitmap(dead_bitmap_, tilepos_x, tilepos_y);
 			}
@@ -159,7 +159,7 @@ void sim_area_widget::click(wxMouseEvent& event)
 	int x = (event.GetPosition().x + scroll_x_) / tile_size_x;
 	int y = (event.GetPosition().y + scroll_y_) / tile_size_y;
 
-	app_model.set_cursor(x, y);	
+	app_model.set_cursor(x, y);
 
 	Refresh();
 }
@@ -179,7 +179,7 @@ wxBitmap sim_area_widget::convert_to_bitmap(const image& img)
 		rgb.push_back(img.data()[i * 4 + 2]);
 		alpha.push_back(img.data()[i * 4 + 3]);
 	}
-	
+
 	return wxBitmap
 		(wxImage(img.size_x(), img.size_y(), &rgb.front(), &alpha.front(), true));
 }

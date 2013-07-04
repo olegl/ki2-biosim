@@ -18,8 +18,12 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 #include <list>
 #include <deque>
+#include <iostream>
+
+#include "flock.hpp"
 
 
 #include "image.hpp"
@@ -99,7 +103,6 @@ class creature_prototype
 
 
 
-
 /**
  *************************************************************************
  *
@@ -125,19 +128,30 @@ class creature
 
 	public:
 
-		// Zustï¿½nde:
+		// Zustände:
 		static const int INITIAL_STATE = 1001; // Anfangszustand
 		static const int EAT = 1002; // Gras essen
 		static const int DISCOVER = 1003; // Umgebung erkunden
 		static const int RUN = 1004; // Wegrennen
 		static const int DO_NOTHING = 1005; // Nichts tun
 		static const int REPRODUCE = 1006;  // Fortpflanzen
+		static const int HUNT = 1007;  // Jagen (für Fleischfresser)
+		static const int VOTED = 1008;  // Jagen (für Fleischfresser)
 
-		creature(const creature_prototype& prototype, int x, int y, double smell_awareness)
+		creature(const creature_prototype& prototype, int x, int y)
 			:
 			prototype(prototype), lifetime(prototype.lifetime()),
-			x_(x), y_(y), lifepoints(100), dead(false), numOfDeadRounds(0), hunger(0), state(INITIAL_STATE), full_count(0)
-		{this->smell_awareness = smell_awareness; }
+			x_(x), y_(y), lifepoints(100), dead(false), numOfDeadRounds(0), hunger(25), state(INITIAL_STATE), full_count(0), inFlock(false), preferedDirection(0)
+		{
+            smell_threshold = 0.1 + (double)(rand()%500)/100.0;
+		}
+
+        creature(const creature_prototype& prototype, int x, int y, double threshold)
+			:
+			prototype(prototype), lifetime(prototype.lifetime()),
+			x_(x), y_(y), lifepoints(100), dead(false), numOfDeadRounds(0), hunger(25), state(INITIAL_STATE), full_count(0), smell_threshold(threshold), inFlock(false), preferedDirection(9)
+		{
+		}
 
 
 		int x() const NOTHROW { return x_; }
@@ -152,10 +166,47 @@ class creature
 		int hunger; // 0 = hungrig, 100 = satt
 		int state; // In welchem Zustand ist die Kreatur?
 
-        std::deque<bool> hunger_memory;  // Speichert fï¿½r die letzten 10 Runden, ob die Kreatur satt war (fï¿½r Fleischfresser)
-        int full_count;     // Zï¿½hlt seit wie vielen Runden die Kreatur kontinuierlich satt ist (fï¿½r Pflanzenfresser)
+        std::deque<bool> hunger_memory;  // Speichert für die letzten 10 Runden, ob die Kreatur satt war (für Fleischfresser)
+        int full_count;     // Zählt seit wie vielen Runden die Kreatur kontinuierlich satt ist (für Pflanzenfresser)
 
-        double getSmellAwareness();
+        double smell_threshold; // Geruchsschwelle (für Fleischfresser)
+
+        bool isFull();      // Methode, die zurückgibt, ob die Kreatur satt ist (unterschiedlich für Pflanzen und Fleischfresser)
+        int getFullRounds();    // Liefert, wie oft ein Fleischfresser in den letzten 10 Runden satt war
+
+        bool inFlock;       // Variable, die speichert, ob die Kreatur in einer Herde ist
+
+        int preferences[9]; /* Array, das die Preferenzen für eine Kreatur speichert
+                                Das erste Element des Arrays hat die höchste Priorität. Gespeichert wird jeweils ein int-Wert, der die Richtung angibt, in die die Kreatur sich bewegen will
+                                Tabelle:      1
+                                            4 0 2
+                                              3
+                                D.h. 0 bedeutet stehenbleiben, 1 heißt nach oben, 2 heißt nach rechts, usw.
+                                */
+        int preferedDirection;
+        void getPreferences(int pref[9]);
+
+        std::deque<int> move_queue; // Schlange, in der die Bewegungen der Kreatur eingetragen werden. Die Kreatur arbeitet diese bei einer Bewegung nacheinander ab
+
+
+
+        // Ein paar Wrapper zur leichteren Verwendung
+        void moveNot();
+        void moveUp();
+        void moveDown();
+        void moveRight();
+        void moveLeft();
+        void moveUpRight();
+        void moveUpLeft();
+        void moveDownRight();
+        void moveDownLeft();
+        void moveRandom();
+
+        void addMove();   // Methode, die eine Bewegung in die Schlange aufnimmt
+        void getMove(int & x, int & y);    // Methode, die die Kreatur entsprechend ihrer move_queue bewegt
+                                        // Als Ergebnis werden die Koordinaten (x,y) zurückgeliefert, an die sich die Kreatur bewegen will
+                                        // Die Bewegung muss vom aufrufenden Programm durchgeführt werden, ebenso eventuelle Checks
+
 
 	private:
 
@@ -164,8 +215,6 @@ class creature
 
 		int x_;
 		int y_;
-
-		double smell_awareness;
 };
 
 
